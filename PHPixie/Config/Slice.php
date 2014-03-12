@@ -2,67 +2,42 @@
 
 namespace PHPixie\Config;
 
-class Slice {
+abstract class Slice {
     
-    protected $config;
-    protected $path;
-    protected $data;
+    protected $loader;
+    protected $key;
     
-    public function __construct($config, $path, $data)
+    public function __construct($loader, $key)
     {
-        $this->config = $config;
-        $this->path = $path;
-        $this->data = $data;
+        $this->loader = $config;
+        $this->key = $key;
     }
     
     public function get($key = null) {
-        list($found, $value) = $this->find($key);
-        
-        if ($found)
-            return $value;
-            
+        $key = $this->fullKey($key)
         $args = func_get_args();
-        if (isset($args[1]))
-            return $args[1];
         
-        throw new \PHPixie\Config\Exception("Configuration for {$this->fullPath($key)} not found.");
+        if (array_key_exists(1, $args))
+            return $this->loader->get($key, $args[1]);
+        
+        return $this->loader->get($key);
     }
     
-    public function slice($key) {
-        list($found, $value) = $this->find($key);
-        $fullPath = $this->fullPath($key);
-        
-        if (!$found)
-            throw new \PHPixie\Config\Exception("Configuration for $fullPath not found.");
-            
-        if (!is_array($subset))
-            throw new \PHPixie\Config\Exception("Configuration for $fullPath is not an array.");
-        
-        return $this->config->slice($fullPath, $data);
+    public function slice($key = null) {
+        return $this->loader->slice($this->fullKey($key));
     }
     
-    protected function find($key) {
+    public function key() {
+        return $this->key;
+    }
+    
+    protected function fullKey($key) {
+        if($this->key === null)
+            return $key;
+        
         if ($key === null)
-            return $this->data;
-            
-        $path = explode('.', $key);
-        $count = count($keys);
+            return $this->key;
         
-        $group = &$this->data;
-        
-        foreach ($path as $i => $key) {
-            
-            if (!array_key_exists($key, $group))
-                return array(false, null);
-            
-            if ($i === $count - 1)
-                return array(true, $this->data[$key]);
-            
-            $group = &$group[$key];
-        }
-    }
-    
-    protected function fullPath($key) {
-        return $this->path.'.'.$key;
+        return $this->key.'.'.$key;
     }
 }

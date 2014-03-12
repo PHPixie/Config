@@ -2,167 +2,93 @@
 
 namespace PHPixie\Config;
 
-/**
- * Handles retrieving of the configuration options.
- * You can add configuration files to /assets/config folder
- * and later access them via the get() method.
- * @package Core
- */
-class Loader extends \PHPixie\Config{
+abstract class Loader{
 
-	/**
-	 * Pixie Dependancy Container
-	 * @var \PHPixie\Pixie
-	 */
-	protected $pixie;
-	
-	/**
-	 * Array of configuration files and values loaded from them
-	 * @var array
-	 */
-	protected $groups = array();
-
-	/**
-	 * Constructs a config handler
-	 *
-	 * @param \PHPixie\Pixie $pixie Pixie dependency container
-	 */
-	public function __construct($pixie) {
-		$this->pixie = $pixie;
-	}
-	
-	/**
-	 * Loads a group configuration file it has not been loaded before and
-	 * returns its options. If the group doesn't exist creates an empty one
-	 *
-	 * @param string    $name Name of the configuration group to load
-	 * @return array    Array of options for this group
-	 */
-	public function get_group($name)
-	{
-
-		if (!isset($this->groups[$name]))
-		{
-			$file = $this->pixie->find_file('config', $name);
-			$this->load_group($name, $file);
-		}
-
-		return $this->groups[$name]['options'];
-	}
-
-	/**
-	 * Loads group from file
-	 *
-	 * @param string $name Name to assign the loaded group
-	 * @param string $file File to load
-	 */
-	public function load_group($name, $file)
-	{
-		
-		if(!empty($file)){
-			$options = include($file);
-			if (!is_array($options))
-				$options = array();
-		}else {
-			$options = array();
-			$file = $this->pixie-> root_dir.'assets/config/'.$name.'.php';
-		}
-		
-		$this->groups[$name] = array(
-			'file' => $file,
-			'options' => $options
-		);
-	}
-
-	/**
-	 * Retrieves a configuration value. You can use a dot notation
-	 * to access properties in group arrays. The first part of the key
-	 * specifies the configuration file from which options should be loaded from
-	 * <code>
-	 *     //Loads ['default']['user'] option
-	 *     //from database.php configuration file
-	 *     $this->pixie->config->get('database.default.user');
-	 * </code>
-	 *
-	 * @param string    $key Configuration key to retrieve.
-	 * @param string    $default Default value to return if the key is not found.
-	 * @return mixed    Configuration value
-	 * @throws \Exception If default value is not specified and the key is not found
-	 */
-	public function find($key)
-	{
-		$p = func_get_args();
-
-		$keys = explode('.', $p[0]);
-		$group_name = array_shift($keys);
-		$group = $this->get_group($group_name);
-		if (empty($keys))
-			return $group;
-
-		$total = count($keys);
-		foreach ($keys as $i => $key)
-		{
-			if (isset($group[$key]))
-			{
-				if ($i == $total - 1)
-					return $group[$key];
-				$group = &$group[$key];
-			}else
-			{
-				if (array_key_exists(1, $p))
-					return $p[1];
-				return;
-			}
-		}
-	}
-
-	/**
-	 * Sets a configuration option.
-	 *
-	 * @param string    $key    Configuration key to set
-	 * @param string    $value  Value to set for this option
-	 */
-	public function set($key, $value)
-	{
-		$keys = explode('.', $key);
-		$group_name = array_shift($keys);
-		$group = $this->get_group($group_name);
-		$subgroup = &$group;
-		$last_key = count($keys) - 1;
-		foreach ($keys as $i => $key)
-		{
-
-			if ($i == $last_key)
-			{
-
-				$subgroup[$key] = $value;
-			}
-			else
-			{
-
-				if (!isset($subgroup[$key]) || !is_array($subgroup[$key])) 
-					$subgroup[$key] = array();
-				
-				$subgroup = & $subgroup[$key];
-			}
-		}
-
-		$this->groups[$group_name]['options'] = $group;
-	}
-
-	/**
-	 * Writes a configuration group back to the file it was loaded from
-	 *
-	 * @param string    $group    Name of the group to write
-	 */
-	public function write($group)
-	{
-		$this->get_group($group);
-		$group = $this->groups[$group];
-		file_put_contents($group['file'], "<?php\r\nreturn ".var_export($group['options'], true).";");
-	}
-	
-	protected function full_key($key) {
-		return $key;
-	}
+    protected $config;
+    protected $data;
+    protected $loaded = false;
+    
+    public function __construct($config)
+    {
+        $this->config = $config;
+    }
+    
+    public function set($key, $value)
+    {
+        $this->requireLoad();
+        $path = explode('.', $key);
+        $key = array_pop($path);
+        $group = &$this->findGroup($path, true);
+        $group[$key] = $value;
+    }
+    
+    public function get($key = null) {
+        $this->requireLoad();
+        if ($key === null)
+            return $this->data;
+        
+        $path = explode('.', $key);
+        $key = array_pop($path);
+        $group = &$this->findGroup($path);
+        
+        if ($group !== null && array_key_exists($key, $group);
+            return $group[$key];
+        
+        $args = func_get_args();
+        if (array_key_exists(1, $args))
+            return $args[1];
+        
+        throw new \PHPixie\Config\Exception("Configuration for '$key' not set.");
+    }
+    
+    public function slice($key = null) {
+        $this->requireLoad();
+        $path = explode('.', $key);
+        $key = array_pop($path);
+        $group = &$this->findGroup($path);
+        if($group === null)
+            throw new \PHPixie\Config\Exception("Configuration for '$key' not set.");
+        $this->config->buildSlice($this, $key);
+    }
+    
+    protected function &findGroup($path, $createMissing = false) {
+        $group = &$this->data;
+        foreach ($path as $i => $key) {
+            
+            if ($i === $count - 1)
+                return array(true, $this->data[$key]);
+            
+            if (!array_key_exists($key, $group) || ()) {
+                if(!$createMissing) {
+                    $group = null;
+                    break;
+                }
+                
+                $group[$key] = array();
+            }
+            
+            if (!is_array($group[$key])) {
+                if(!$createMissing) {
+                    $group = null;
+                    break;
+                }
+                
+                throw new \PHPixie\Config\Exception("An element with key {implode('.', $path)} is not an array.");
+            }
+            
+            $group = &$group[$key];
+        }
+        
+        return $group;
+    }
+    
+    protected function requireLoad() 
+    {
+        if (!$this->loaded) {
+            $this->load();
+            $this->loaded = true;
+        }
+    }
+    public abstract function load();
+    public abstract function persist();
 }
