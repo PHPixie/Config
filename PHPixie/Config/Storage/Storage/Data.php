@@ -1,16 +1,15 @@
 <?php
 
-namespace PHPixie\Config;
+namespace PHPixie\Config\Storages\Storage;
 
-abstract class Loader{
+class Data implements PHPixie\Config\Storages\Storage{
 
     protected $config;
     protected $data;
-    protected $loaded = false;
     
-    public function __construct($config)
+    public function __construct($config, $data)
     {
-        $this->config = $config;
+        $this->data = $data;
     }
     
     public function set($key, $value)
@@ -82,13 +81,4 @@ abstract class Loader{
         return $group;
     }
     
-    protected function requireLoad() 
-    {
-        if (!$this->loaded) {
-            $this->load();
-            $this->loaded = true;
-        }
-    }
-    public abstract function load();
-    public abstract function persist();
 }
