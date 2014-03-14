@@ -6,11 +6,13 @@ class File extends Data {
     
     protected $handler;
     protected $loaded;
+    protected $key;
     
-    public function __construct($config, $handler)
+    public function __construct($config, $handler, $key = null)
     {
         $this->handler = $handler;
-        parent::__construct($config);
+        $this->key = $key;
+        $this->config = $config;
     }
     
     public function slice($key) {
@@ -31,6 +33,11 @@ class File extends Data {
     public function persist()
     {
         $this->handler->write($this->file, $this->data);
+    }
+    
+    public function key()
+    {
+        return $this->key;
     }
     
     protected function load()

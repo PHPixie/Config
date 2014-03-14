@@ -1,16 +1,18 @@
 <?php
 
-namespace PHPixie\Config\Loader;
+namespace PHPixie\Config\Storages\Storage;
 
 class Directory {
     
+    protected $config;
     protected $directory;
     protected $rootName;
     protected $fileLoaders = array();
     protected $directoryTree;
     
-    public function __construct($directory, $rootName = 'config')
+    public function __construct($config, $directory, $rootName = 'config')
     {
+        $this->config = $config;
         $this->directory = $directory;
         $this->rootName = $rootName;
     }
@@ -41,7 +43,8 @@ class Directory {
     }
     
     protected function readDirectory($directory)
-    {
+    {   
+    
         $branch = array();
         
         foreach(scandir($directory) as $file) {
@@ -61,11 +64,11 @@ class Directory {
         return $branch;
     }
     
-    protected function findLoaderRecursive($path, $directory, & $branch, $key = null)
+    protected function findLoaderRecursive($path, $directory, &$branch, $key = null)
     {
-        $current = array_unshift($path);
+        $current = array_shift($path);
         
-        if ($branch === null) {
+        if ($branch === null)
             $branch = $this->readDirectory($directory);
         
         $currentPath[] = $current;
@@ -76,11 +79,21 @@ class Directory {
                 return $loader;
         }
         
-        if ($branch[$current] isnatnceof \PHPixie\Config\Loader)
+        if ($branch[$current] instanceof \PHPixie\Config\Loader)
             return $branch[$current];
         
         if (is_string($branch[$current]))
-            return $branch[$current] = $this->getFileLoader(implode('.', $currentPath), $file);
+            return $branch[$current] = $this->getFileLoader($branch[$current], implode('.', $currentPath));
         return null;
+    }
+    
+    protected function getFileLoader($file, $key)
+    {
+        return $this->config->fileStorage($file, $key);
+    }
+    
+    protected function getKeyOffset($key, $childKey)
+    {
+        return substr($key, strlen($childKey) + 1);
     }
 }

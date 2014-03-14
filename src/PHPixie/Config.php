@@ -41,4 +41,9 @@ class Config{
         
         return $this->loaders[$name];
     }
+    
+    public function fileStorage($file, $key = null)
+    {
+        return new \PHPixie\Config\Storages\Storage\File($this, $file, $key);
+    }
 }

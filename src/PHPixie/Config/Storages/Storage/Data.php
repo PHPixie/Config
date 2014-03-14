@@ -2,7 +2,7 @@
 
 namespace PHPixie\Config\Storages\Storage;
 
-class Data implements PHPixie\Config\Storages\Storage{
+class Data implements \PHPixie\Config\Storages\Storage{
 
     protected $config;
     protected $data;
@@ -30,7 +30,7 @@ class Data implements PHPixie\Config\Storages\Storage{
         $key = array_pop($path);
         $group = &$this->findGroup($path);
         
-        if ($group !== null && array_key_exists($key, $group);
+        if ($group !== null && array_key_exists($key, $group))
             return $group[$key];
         
         $args = func_get_args();
@@ -57,7 +57,7 @@ class Data implements PHPixie\Config\Storages\Storage{
             if ($i === $count - 1)
                 return array(true, $this->data[$key]);
             
-            if (!array_key_exists($key, $group) || ()) {
+            if (!array_key_exists($key, $group)) {
                 if(!$createMissing) {
                     $group = null;
                     break;
