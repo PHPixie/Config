@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPixie\Config\Loader\File\Format;
+namespace PHPixie\Config\Storages\Storage\File\Handler;
 
-class PHP extends PHPixie\Config\Loader\File\Format {
+class PHP implements \PHPixie\Config\Storages\Storage\File\Handler {
     
     public function read($file)
     {

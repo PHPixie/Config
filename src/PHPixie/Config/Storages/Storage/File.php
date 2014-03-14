@@ -6,23 +6,25 @@ class File extends Data {
     
     protected $handler;
     protected $loaded;
+    protected $file;
     protected $key;
     
-    public function __construct($config, $handler, $key = null)
+    public function __construct($config, $handler, $file, $key = null)
     {
-        $this->handler = $handler;
-        $this->key = $key;
         $this->config = $config;
+        $this->handler = $handler;
+        $this->file = $file;
+        $this->key = $key;
     }
     
     public function slice($key) {
         $this->requireLoad();
-        parent::slice($key);
+        return parent::slice($key);
     }
     
     public function get($key) {
         $this->requireLoad();
-        parent::get($key);
+        return parent::get($key);
     }
     
     public function set($key, $value) {

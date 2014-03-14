@@ -1,26 +1,26 @@
 <?php
 
-namespace PHPixie\Config\Loader\File;
+namespace PHPixie\Config\Storages\Storage\File;
 
-class Formats {
+class Handlers
+{
+    protected $handlers = array();
     
-    protected $formats = array();
-    
-    protected $extensionFormats = array(
+    protected $extensionHandlers = array(
         'php' => 'PHP'
-    )
+    );
     
-    public function forExtension($extensionName)
+    public function getForExtension($extensionName)
     {
-        $name = $this->extensionFormats[$extensionName];
-        if(!isset($this->formats[$name]))
-            $this->formats[$name] = $this->buildFormat($name);
-        return $this->formats[$name];
+        $name = $this->extensionHandlers[$extensionName];
+        if(!isset($this->handlers[$name]))
+            $this->handlers[$name] = $this->buildHandler($name);
+        return $this->handlers[$name];
     }
     
-    protected function buildFormat($name)
+    protected function buildHandler($name)
     {
-        $class = 'PHPixie\Config\Loader\File\Format\\'.$name;
+        $class = '\PHPixie\Config\Storages\Storage\File\Handler\\'.$name;
         return new $class;
     }
 }

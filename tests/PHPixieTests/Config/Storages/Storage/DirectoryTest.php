@@ -8,9 +8,9 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     protected $storage;
     protected $dir;
     protected $files = array(
-        array('', 'forest.php', array('meadows' => 5, 'meadow' => false)),
+        array('', 'forest.php', array('meadows' => 5, 'meadow' => 8)),
         array('field/', 'flowers.php', array('type' => 3)),
-        array('forest/', 'meadow.php', array('grass_type' => 5, 'fairies' => false)),
+        array('forest/', 'meadow.php', array('grass_type' => 6, 'fairies' => false)),
         array('forest/lake/', 'mermaids.php', array('names' => array('Naiad'))),
         array('forest/meadow/', 'fairies.php', array('names' => array('Tinkerbell'))),
         array('forest/meadow/trees/', 'oak.php', array('fairy' => array('Trixie'))),
@@ -38,7 +38,8 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     
     public function testGet()
     {
-        $this->assertEquals(4, $this->storage->get('forest.meadows'));
+        //$this->assertEquals(5, $this->storage->get('forest.meadows'));
+        $this->assertEquals(6, $this->storage->get('forest.meadow.grass_type'));
     }
     
     protected function removeDirs()

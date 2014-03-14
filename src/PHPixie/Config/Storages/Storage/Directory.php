@@ -27,9 +27,10 @@ class Directory {
     
     public function get($key) {
         $path = explode('.', $key);
-        $key = array_pop($path);
+        array_pop($path);
         $loader = $this->getNearestLoader($path);
-        $this->getKeyOffset($key, $loader->key());
+        $key = $this->getKeyOffset($key, $loader->key());
+        print_r($key); die;
         $args = func_get_args();
         if (array_key_exists(1, $args))
             return $loader->slice($key, $args[1]);
@@ -39,7 +40,7 @@ class Directory {
    
     protected function getNearestLoader($path)
     {
-        return $this->findLoaderRecursive($path, $this->directory, $this->data);
+        return $this->findLoaderRecursive($path, $this->directory, $this->directoryTree);
     }
     
     protected function readDirectory($directory)
@@ -57,7 +58,7 @@ class Directory {
                 $branch[$file] = null;
             }else {
                 $fileName = pathinfo($filePath, PATHINFO_FILENAME);
-                $branch[$fileName] = $file;
+                $branch[$fileName] = $filePath;
             }
         }
         
@@ -70,16 +71,15 @@ class Directory {
         
         if ($branch === null)
             $branch = $this->readDirectory($directory);
-        
+        print_r($branch);
         $currentPath[] = $current;
-        
         if (is_array($branch[$current])) {
             $loader = $this->findLoaderRecursive($path, $directory.'/'.$current, $branch[$current]);
             if ($loader !== null)
                 return $loader;
         }
         
-        if ($branch[$current] instanceof \PHPixie\Config\Loader)
+        if ($branch[$current] instanceof \PHPixie\Config\Storages\Storage\File)
             return $branch[$current];
         
         if (is_string($branch[$current]))

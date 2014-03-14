@@ -1,9 +1,9 @@
 <?php
 
-namespace PHPixie\Config\Loader\File;
+namespace PHPixie\Config\Storages\Storage\File;
 
-abstract Format {
+interface Handler {
     
-    public abstract function read($file);
-    public abstract function write($file, $data);
+    public function read($file);
+    public function write($file, $data);
 }

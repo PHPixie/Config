@@ -28,8 +28,8 @@ class Data implements \PHPixie\Config\Storages\Storage{
         
         $path = explode('.', $key);
         $key = array_pop($path);
-        $group = &$this->findGroup($path);
-        
+        $group = & $this->findGroup($path);
+        var_dump($group);
         if ($group !== null && array_key_exists($key, $group))
             return $group[$key];
         
@@ -52,10 +52,11 @@ class Data implements \PHPixie\Config\Storages\Storage{
     
     protected function &findGroup($path, $createMissing = false) {
         $group = &$this->data;
+        $count = count($group);
         foreach ($path as $i => $key) {
             
             if ($i === $count - 1)
-                return array(true, $this->data[$key]);
+                return $group[$key];
             
             if (!array_key_exists($key, $group)) {
                 if(!$createMissing) {
