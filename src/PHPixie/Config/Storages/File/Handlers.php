@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPixie\Config\Storages\Storage\File;
+namespace PHPixie\Config\Storages\File;
 
 class Handlers
 {
@@ -13,6 +13,10 @@ class Handlers
     public function getForExtension($extensionName)
     {
         $name = $this->extensionHandlers[$extensionName];
+        return $this->get($name);
+    }
+    
+    public function get($name) {
         if(!isset($this->handlers[$name]))
             $this->handlers[$name] = $this->buildHandler($name);
         return $this->handlers[$name];
@@ -20,7 +24,7 @@ class Handlers
     
     protected function buildHandler($name)
     {
-        $class = '\PHPixie\Config\Storages\Storage\File\Handler\\'.$name;
+        $class = '\PHPixie\Config\Storages\File\Handler\\'.$name;
         return new $class;
     }
 }

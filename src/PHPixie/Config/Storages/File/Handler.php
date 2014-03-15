@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPixie\Config\Storages\Storage\File;
+namespace PHPixie\Config\Storages\File;
 
 interface Handler {
     

@@ -1,6 +1,6 @@
 <phpunit bootstrap="phpunit.php">
     <testsuites>
-        <testsuite name="PHPixie Database Module">
+        <testsuite name="PHPixie Config Module">
             <directory>../src/</directory>
         </testsuite>
     </testsuites>

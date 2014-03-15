@@ -2,9 +2,11 @@
 
 namespace PHPixieTests\Config\Storages\Storage;
 
-class DirectoryTest extends \PHPUnit_Framework_TestCase
+/**
+ * @coversDefaultClass \PHPixie\Config\Storages\Directory
+ */
+class DirectoryTest extends \PHPixieTests\Config\Storage\PersistableTest
 {
-    protected $config;
     protected $storage;
     protected $dir;
     protected $files = array(
@@ -15,7 +17,6 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         array('forest/meadow/', 'fairies.php', array('names' => array('Tinkerbell'))),
         array('forest/meadow/trees/', 'oak.php', array('fairy' => array('Trixie'))),
     );
-    
     public function setUp()
     {
         $this->dir = sys_get_temp_dir().'/phpixie_config_test/';
@@ -27,8 +28,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             file_put_contents($this->dir.$file[0].$file[1], "<?php\r\nreturn ".var_export($file[2], true).";");
         }
         
-        $this->config = new \PHPixie\Config;
-        $this->storage = new \PHPixie\Config\Storages\Storage\Directory($this->config, $this->dir, 'forest');
+        parent::setUp();
     }
     
     public function tearDown()
@@ -36,10 +36,21 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $this->removeDirs();
     }
     
-    public function testGet()
+    /**
+     * @covers ::persist
+     * @covers ::<protected>
+     */
+    public function testPersist()
     {
-        //$this->assertEquals(5, $this->storage->get('forest.meadows'));
-        $this->assertEquals(6, $this->storage->get('forest.meadow.grass_type'));
+        parent::testPersist();
+        $this->assertEquals(array(
+            'names' => array('Pixie')
+        ), include($this->dir.'/forest/meadow/fairies.php'));
+        $this->assertEquals(false, file_exists($this->dir.'/forest/meadow/trees/oak.php'));
+    }
+    
+    protected function getStorage($key = null) {
+        return new \PHPixie\Config\Storages\Directory($this->config, $this->dir, 'forest', 'php', $key);
     }
     
     protected function removeDirs()

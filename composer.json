@@ -1,0 +1,23 @@
+{
+    "name": "phpixie/config",
+    "description": "PHPixie Configuration library",
+    "keywords": ["config"],
+    "homepage": "http://phpixie.com",
+    "type": "library",
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Roman Tsiupa",
+            "email": "draconyster@gmail.com",
+            "homepage": "http://dracony.org"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"": "src/"}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.x-dev"
+        }
+    }
+}
