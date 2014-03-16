@@ -1,4 +1,4 @@
 Config
 ======
 
-PHPixie Config Library
+PHPixie Configuration Library
