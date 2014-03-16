@@ -7,7 +7,7 @@ namespace PHPixieTests\Config;
  */
 abstract class StorageTest extends \PHPixieTests\Config\SliceTest
 {
-    
+
     protected $storage;
     protected $data = array(
         'meadows' => 5,
@@ -28,13 +28,13 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
                         )
         )
     );
-    
+
     public function setUp()
     {
         parent::setUp();
         $this->storage = $this->getStorage();
     }
-    
+
     /**
      * @covers ::get
      * @covers ::<protected>
@@ -57,23 +57,23 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
             )
         ), $this->storage-> get('meadow'));
         $this->assertEquals('Trixie', $this->storage-> get('meadow.trees.oak.fairy.0'));
-        
+
         $this->assertEquals('test', $this->storage-> get('meadow.grass_type.pixies', 'test'));
-        $this->assertException(function(){
+        $this->assertException(function () {
             $this->storage-> get('meadow.grass_type.pixies');
         });
-        $this->assertException(function(){
+        $this->assertException(function () {
             $this->storage-> get('meadow.grass_type.pixies.name');
         });
-        
+
         $this->storage->remove(null);
-        
+
         $this->assertEquals('test', $this->storage->get(null, 'test'));
-        $this->assertException(function(){
+        $this->assertException(function () {
             $this->assertEquals('test', $this->storage-> get(null));
         });
     }
-    
+
     /**
      * @covers ::set
      * @covers ::<protected>
@@ -84,10 +84,10 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
         $this->assertEquals(8, $this->storage-> get('meadow.grass_type'));
         $this->storage->set('meadow.trail.length', 8);
         $this->assertEquals(8, $this->storage-> get('meadow.trail.length'));
-        $this->assertException(function(){
+        $this->assertException(function () {
             $this->storage-> set('meadow.grass_type.pixies', 8);
         });
-        
+
         $this->storage->set('meadow', array(
             'grass_type' => 6,
             'fairies' => array(
@@ -98,11 +98,11 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
         $this->assertEquals(1, $this->storage-> get('meadow.trees.oak', 1));
         $this->storage-> set(null, array('test' => 5));
         $this->assertEquals('5', $this->storage-> get('test'));
-        $this->assertException(function(){
+        $this->assertException(function () {
             $this->storage-> set(null, 5);
         });
     }
-    
+
     /**
      * @covers ::remove
      * @covers ::<protected>
@@ -117,7 +117,7 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
         $this->assertEquals('test', $this->storage-> get('meadow', 'test'));
         $this->assertEquals('test', $this->storage-> get(null, 'test'));
     }
-    
+
     /**
      * @covers ::slice
      * @covers ::<protected>
@@ -130,21 +130,22 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
                     ->with ($this->storage, 'test');
         $this->storage->slice('test');
     }
-    
-    
-    protected function getSlice($key = null){
+
+    protected function getSlice($key = null)
+    {
         return $this->getStorage($key);
     }
-    
-    protected function assertException($callback) {
+
+    protected function assertException($callback)
+    {
         $except = false;
         try {
             $callback();
-        }catch (\PHPixie\Config\Exception $e) {
+        } catch (\PHPixie\Config\Exception $e) {
             $except = true;
         }
         $this->assertEquals(true, $except);
     }
-    
+
     abstract protected function getStorage($key = null);
 }

@@ -14,7 +14,7 @@ abstract class PersistableTest extends \PHPixieTests\Config\StorageTest
                 'names' => array('Pixie')
             )
         );
-    
+
     /**
      * @covers ::persist
      * @covers ::<protected>

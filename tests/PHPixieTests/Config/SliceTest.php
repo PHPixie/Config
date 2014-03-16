@@ -8,11 +8,12 @@ namespace PHPixieTests\Config;
 abstract class SliceTest extends \PHPixieTests\AbstractConfigTest
 {
     protected $config;
-    
-    public function setUp() {
+
+    public function setUp()
+    {
         $this->config = $this->getMock('\PHPixie\Config', array('buildSlice'));
     }
-    
+
     /**
      * @covers ::key
      */
@@ -21,12 +22,12 @@ abstract class SliceTest extends \PHPixieTests\AbstractConfigTest
         $this->assertEquals(null, $this->getSlice()->key());
         $this->assertEquals('test', $this->getSlice('test')->key());
     }
-    
+
     public function testConstruct()
     {
         $this->getSlice();
     }
-    
+
     /**
      * @covers ::fullKey
      */
@@ -37,6 +38,6 @@ abstract class SliceTest extends \PHPixieTests\AbstractConfigTest
         $this->assertEquals('test.key', $slice-> fullKey('key'));
         $this->assertEquals('test', $slice->fullKey());
     }
-    
+
     abstract protected function getSlice($key = null);
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPixieTests\Config\Storages\Storage;
+namespace PHPixieTests\Config\Storages;
 
 /**
  * @coversDefaultClass \PHPixie\Config\Storages\Directory
@@ -20,22 +20,22 @@ class DirectoryTest extends \PHPixieTests\Config\Storage\PersistableTest
     public function setUp()
     {
         $this->dir = sys_get_temp_dir().'/phpixie_config_test/';
-        
+
         $this->removeDirs();
-        
-        foreach($this->files as $file) {
+
+        foreach ($this->files as $file) {
             mkdir($this->dir.$file[0], 0777, true);
             file_put_contents($this->dir.$file[0].$file[1], "<?php\r\nreturn ".var_export($file[2], true).";");
         }
-        
+
         parent::setUp();
     }
-    
+
     public function tearDown()
     {
         $this->removeDirs();
     }
-    
+
     /**
      * @covers ::persist
      * @covers ::<protected>
@@ -48,17 +48,18 @@ class DirectoryTest extends \PHPixieTests\Config\Storage\PersistableTest
         ), include($this->dir.'/forest/meadow/fairies.php'));
         $this->assertEquals(false, file_exists($this->dir.'/forest/meadow/trees/oak.php'));
     }
-    
-    protected function getStorage($key = null) {
+
+    protected function getStorage($key = null)
+    {
         return new \PHPixie\Config\Storages\Directory($this->config, $this->dir, 'forest', 'php', $key);
     }
-    
+
     protected function removeDirs()
     {
-        foreach(array_reverse($this->files) as $file) {
+        foreach (array_reverse($this->files) as $file) {
             if(file_exists($this->dir.$file[0].$file[1]))
                 unlink($this->dir.$file[0].$file[1]);
-            
+
             if(file_exists($this->dir.$file[0]))
                 rmdir($this->dir.$file[0]);
         }
