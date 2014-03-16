@@ -24,6 +24,11 @@ class Config{
         return new \PHPixie\Config\Storages\Directory($this, $directory, $name, $extension, $key);
     }
     
+    public function buildSlice($storage, $key = null)
+    {
+        return new \PHPixie\Config\Storage\Slice($this, $storage, $key);
+    }
+    
     public function fileHandlers()
     {
         if (!isset($this->fileHandlers))

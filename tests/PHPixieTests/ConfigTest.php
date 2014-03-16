@@ -46,6 +46,17 @@ class ConfigTest extends AbstractConfigTest{
     }
     
     /**
+     * @covers ::buildSlice
+     * @covers ::<protected>
+     */
+    public function testBuildSlice(){
+        $slice = $this->config->buildSlice('test', 'pixie');
+        $this->assertInstanceOf('\PHPixie\Config\Storage\Slice', $slice);
+        $this->assertEquals('pixie', $slice->key());
+        $this->assertAttributeEquals('test', 'storage', $slice);
+    }
+    
+    /**
      * @covers ::fileHandlers
      * @covers ::<protected>
      */
