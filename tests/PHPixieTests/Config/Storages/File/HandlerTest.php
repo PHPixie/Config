@@ -13,7 +13,7 @@ abstract class HandlerTest extends \PHPixieTests\AbstractConfigTest
     public function setUp()
     {
         $this->removeFile();
-        $this->file = sys_get_temp_dir().'phpixie_config_handler';
+        $this->file = sys_get_temp_dir().'/phpixie_config_handler';
         $this->handler = $this->handler();
     }
 
