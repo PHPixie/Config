@@ -43,9 +43,12 @@ class DirectoryTest extends \PHPixieTests\Config\Storage\PersistableTest
     public function testPersist()
     {
         parent::testPersist();
+        $copy = $this->dir.'/copy.php';
+        copy($this->dir.'/forest/meadow/fairies.php', $copy);
         $this->assertEquals(array(
             'names' => array('Pixie')
-        ), include($this->dir.'/forest/meadow/fairies.php'));
+        ), include($copy));
+        unlink($copy);
         $this->assertEquals(false, file_exists($this->dir.'/forest/meadow/trees/oak.php'));
     }
 
