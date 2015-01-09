@@ -18,7 +18,7 @@ class FileTest extends \PHPixieTests\Config\Storage\PersistableTest
         $this->removeFile();
         file_put_contents($this->file, "");
 
-        $this->dataStorage = $this->getMock('\PHPixie\Config\Storages\Data', array('get', 'set', 'remove'), array(), '', false);
+        $this->dataStorage = $this->getMock('\PHPixie\Config\Storages\Data', array(), array(), '', false);
         $this->handler = $this->getMock('\PHPixie\Config\Storages\File\Handler', array('read', 'write'));
         parent::setUp();
     }
@@ -28,25 +28,45 @@ class FileTest extends \PHPixieTests\Config\Storage\PersistableTest
         $this->removeFile();
     }
 
-    /**
-     * @covers ::get
-     * @covers ::<protected>
-     */
-    public function testGet()
+    protected function prepareGetDataSets()
     {
         $this->assertRead();
+        
+        $sets = array();
+        
         $this->dataStorage
-                        ->expects($this->at(1))
-                        ->method('get')
-                        ->with ('test')
-                        ->will($this->returnValue(5));
+                    ->expects($this->at(2))
+                    ->method('getData')
+                    ->with('pixie', false, null)
+                    ->will($this->returnValue('test'));
+        var_dump($this->storage->getData('pixie', false, null));die;
+        $sets[]= array('get', array('pixie'), 'test');
+        /*
         $this->dataStorage
-                        ->expects($this->at(2))
-                        ->method('get')
-                        ->with ('test', 'test2')
-                        ->will($this->returnValue(5));
-        $this->assertEquals(5, $this->storage-> get('test'));
-        $this->assertEquals(5, $this->storage-> get('test', 'test2'));
+                    ->expects($this->at(2))
+                    ->method('getData')
+                    ->with('pixie', false, 5)
+                    ->will($this->returnValue('test'));
+        
+        $sets[]= array('get', array('pixie', 5), 'test');
+        
+        $this->dataStorage
+                    ->expects($this->at(3))
+                    ->method('getData')
+                    ->with('pixie', true, null)
+                    ->will($this->returnValue('test'));
+        
+        $sets[]= array('getRequired', array('pixie'), 'test');
+        
+        $this->dataStorage
+                    ->expects($this->at(4))
+                    ->method('getData')
+                    ->with('pixie', true, null)
+                    ->will($this->throwException(new \PHPixie\Config\Exception()));
+        
+        $sets[]= array('getRequired', array('pixie'), 'exception');
+        */
+        return $sets;
     }
 
     /**
@@ -102,6 +122,32 @@ class FileTest extends \PHPixieTests\Config\Storage\PersistableTest
         $this->assertAttributeEquals(false, 'modified', $this->storage);
         $this->storage->remove('test');
         $this->assertAttributeEquals(true, 'modified', $this->storage);
+    }
+    
+    /**
+     * @covers ::keys
+     * @covers ::<protected>
+     */
+    public function testKeys()
+    {
+        $this->assertRead();
+        
+        $this->dataStorage
+                        ->expects($this->at(1))
+                        ->method('keys')
+                        ->with ('test', false);
+        
+        $this->dataStorage
+                        ->expects($this->at(1))
+                        ->method('keys')
+                        ->with ('test', true);
+        
+        $this->assertAttributeEquals(false, 'modified', $this->storage);
+        
+        $this->storage->remove('test');
+        $this->storage->remove('test', true);
+        
+        $this->assertAttributeEquals(false, 'modified', $this->storage);
     }
 
     /**

@@ -35,17 +35,16 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
         $this->storage = $this->getStorage();
     }
 
-    /**
-     * @covers ::get
-     * @covers ::<protected>
-     */
-    public function testGet()
+    protected function prepareGetDataSets()
     {
-        $this->assertEquals($this->data, $this->storage->get());
-        $this->assertEquals(5, $this->storage->get('meadows'));
-        $this->assertEquals(6, $this->storage-> get('meadow.grass_type'));
-        $this->assertEquals(array('names' => array('Naiad')), $this->storage-> get('lake.mermaids'));
-        $this->assertEquals(array(
+        $sets = array();
+        
+        $sets[] = array('get', array(), $this->data);
+        $sets[] = array('get', array('meadows'), 5);
+        $sets[] = array('getRequired', array('meadow.grass_type'), 6);
+        
+        $sets[] = array('getRequired', array('lake.mermaids'), array('names' => array('Naiad')));
+        $sets[] = array('get', array('meadow'), array(
             'grass_type' => 6,
             'fairies' => array(
                 'names' => array('Tinkerbell')
@@ -55,25 +54,31 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
                     'fairy' => array('Trixie')
                 )
             )
-        ), $this->storage-> get('meadow'));
-        $this->assertEquals('Trixie', $this->storage-> get('meadow.trees.oak.fairy.0'));
+        ));
+        
+        $sets[] = array('get', array('meadow.trees.oak.fairy.0'), 'Trixie');
+        
+        $sets[] = array('get', array('meadow.grass_type.pixies', 'test'), 'test');
+        $sets[] = array('getRequired', array('meadow.grass_type.pixies'), 'exception');
+        $sets[] = array('getRequired', array('meadow.grass_type.pixies.name'), 'exception');
+        
+        return $sets;
+    }
 
-        $this->assertEquals('test', $this->storage-> get('meadow.grass_type.pixies', 'test'));
-        $this->assertException(function () {
-            $this->storage-> get('meadow.grass_type.pixies');
-        });
-        $this->assertException(function () {
-            $this->storage-> get('meadow.grass_type.pixies.name');
-        });
-
+    /**
+     * @covers ::getData
+     * @covers ::<protected>
+     */
+    public function testGetAfterRemove()
+    {
         $this->storage->remove(null);
 
         $this->assertEquals('test', $this->storage->get(null, 'test'));
         $this->assertException(function () {
-            $this->assertEquals('test', $this->storage-> get(null));
+            $this->assertEquals('test', $this->storage->getRequired(null));
         });
     }
-
+    
     /**
      * @covers ::set
      * @covers ::<protected>
@@ -135,16 +140,10 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
     {
         return $this->getStorage($key);
     }
-
-    protected function assertException($callback)
+    
+    protected function slice()
     {
-        $except = false;
-        try {
-            $callback();
-        } catch (\PHPixie\Config\Exception $e) {
-            $except = true;
-        }
-        $this->assertEquals(true, $except);
+        return $this->storage;
     }
 
     abstract protected function getStorage($key = null);

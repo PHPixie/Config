@@ -18,13 +18,10 @@ class File extends \PHPixie\Config\Storage\Persistable
         parent::__construct($config, $key);
     }
 
-    public function get($key = null)
+    public function getData($key = null, $isRequired = false, $default = null)
     {
         $this->requireLoad();
-        $args = func_get_args();
-        if (array_key_exists(1, $args))
-            return $this->dataStorage->get($key, $args[1]);
-        return $this->dataStorage->get($key);
+        return $this->dataStorage->get($key, $isRequired, $default);
     }
 
     public function set($key, $value)
@@ -39,6 +36,12 @@ class File extends \PHPixie\Config\Storage\Persistable
         $this->requireLoad();
         $this->dataStorage->remove($key);
         $this->modified = true;
+    }
+    
+    public function keys($key = null, $isRequired = false)
+    {
+        $this->requireLoad();
+        $this->dataStorage->keys($key, $isRequired);
     }
 
     public function persist()

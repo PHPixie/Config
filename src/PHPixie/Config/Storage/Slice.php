@@ -13,22 +13,17 @@ class Slice extends \PHPixie\Config\Slice
         parent::__construct($config, $key);
     }
 
-    public function get($key = null)
+    public function getData($key = null, $isRequired = false, $default = null)
     {
         $key = $this->storageKey($key);
-        $args = func_get_args();
-
-        if (array_key_exists(1, $args))
-            return $this->storage->get($key, $args[1]);
-
-        return $this->storage->get($key);
+        return $this->storage->getData($key, $isRequired, $default);
     }
 
     public function slice($key = null)
     {
         return $this->storage->slice($this->storageKey($key));
     }
-
+    
     public function set($key, $value)
     {
         $this->storage->set($this->storageKey($key), $value);
@@ -37,6 +32,11 @@ class Slice extends \PHPixie\Config\Slice
     public function remove($key = null)
     {
         $this->storage->remove($this->storageKey($key));
+    }
+    
+    public function keys($key = null, $isRequired = false)
+    {
+        $this->storage->keys($this->storageKey($key), $isRequired);
     }
 
     public function storageKey($key = null)

@@ -13,11 +13,16 @@ abstract class Slice
         $this->key = $key;
     }
 
-    abstract public function get($key = null);
-    abstract public function slice($key = null);
-    abstract public function set($key, $value);
-    abstract public function remove($key = null);
-
+    public function get($key = null, $default = null)
+    {
+        return $this->getData($key, false, $default);
+    }
+    
+    public function getRequired($key = null)
+    {
+        return $this->getData($key, true);
+    }
+    
     public function key()
     {
         return $this->key;
@@ -34,4 +39,10 @@ abstract class Slice
 
         return $this->key.'.'.$key;
     }
+    
+    abstract public function slice($key = null);
+    abstract public function set($key, $value);
+    abstract public function remove($key = null);
+    abstract public function keys($key = null, $isRequired = false);
+    abstract public function getData($key = null, $isRequired = false, $default = null);
 }

@@ -8,40 +8,12 @@ namespace PHPixieTests\Config\Storage;
 class SliceTest extends \PHPixieTests\Config\SliceTest
 {
     protected $storage;
+    protected $slice;
 
     public function setUp()
     {
-        $this->storage = $this->getMock('\PHPixie\Config\Storage', array('get', 'set', 'slice', 'remove', 'key'), array(), '' , false);
+        $this->storage = $this->getMock('\PHPixie\Config\Storage', array(), array(), '' , false);
         $this->slice = $this->getSlice();
-    }
-
-    /**
-     * @covers ::get
-     * @covers ::<protected>
-     */
-    public function testGetDefault()
-    {
-        $this->storage
-                    ->expects($this->any())
-                    ->method('get')
-                    ->with ('test', 'test')
-                    ->will($this->returnValue(5));
-        $this->assertEquals(5, $this->slice->get('test', 'test'));
-    }
-
-    /**
-     * @covers ::get
-     * @covers ::<protected>
-     */
-    public function testGetDeep()
-    {
-        $this->slice = $this->getSlice('pixie');
-        $this->storage
-                    ->expects($this->any())
-                    ->method('get')
-                    ->with ('pixie.test')
-                    ->will($this->returnValue(5));
-        $this->assertEquals(5, $this->slice->get('test'));
     }
 
     /**
@@ -83,6 +55,28 @@ class SliceTest extends \PHPixieTests\Config\SliceTest
                     ->with ('test');
         $this->slice->remove('test');
     }
+    
+    /**
+     * @covers ::keys
+     * @covers ::<protected>
+     */
+    public function testKeys()
+    {
+        $this->storage
+                    ->expects($this->at(0))
+                    ->method('keys')
+                    ->with ('test', false);
+        
+        $this->slice->keys('test');
+        
+        $this->storage
+                    ->expects($this->at(0))
+                    ->method('keys')
+                    ->with ('test', true);
+        
+        $this->slice->keys('test', true);
+
+    }
 
     /**
      * @covers ::storageKey
@@ -111,8 +105,53 @@ class SliceTest extends \PHPixieTests\Config\SliceTest
         $this->assertEquals('pixie.test.key', $slice-> fullKey('key'));
     }
 
+    protected function prepareGetDataSets()
+    {
+        $sets = array();
+        
+        $this->storage
+                    ->expects($this->at(0))
+                    ->method('getData')
+                    ->with('pixie', false, null)
+                    ->will($this->returnValue('test'));
+        
+        $sets[]= array('get', array('pixie'), 'test');
+        
+        $this->storage
+                    ->expects($this->at(1))
+                    ->method('getData')
+                    ->with('pixie', false, 5)
+                    ->will($this->returnValue('test'));
+        
+        $sets[]= array('get', array('pixie', 5), 'test');
+        
+        $this->storage
+                    ->expects($this->at(2))
+                    ->method('getData')
+                    ->with('pixie', true, null)
+                    ->will($this->returnValue('test'));
+        
+        $sets[]= array('getRequired', array('pixie'), 'test');
+        
+        $this->storage
+                    ->expects($this->at(3))
+                    ->method('getData')
+                    ->with('pixie', true, null)
+                    ->will($this->throwException(new \PHPixie\Config\Exception()));
+        
+        $sets[]= array('getRequired', array('pixie'), 'exception');
+        
+        return $sets;
+    }
+    
+    protected function slice()
+    {
+        return $this->slice;
+    }
+    
     protected function getSlice($key = null)
     {
         return new \PHPixie\Config\Storage\Slice($this->config, $this->storage, $key);
     }
+    
 }
