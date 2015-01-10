@@ -54,7 +54,7 @@ abstract class SliceTest extends \PHPixieTests\AbstractConfigTest
             
             if($set[2] == 'exception') {
                 $this->assertException(function() use($callable, $set) {
-                    call_user_func_array($callable, $set);
+                    call_user_func_array($callable, $set[1]);
                 });
                 
             }else{

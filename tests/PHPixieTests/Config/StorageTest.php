@@ -65,20 +65,7 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
         return $sets;
     }
 
-    /**
-     * @covers ::getData
-     * @covers ::<protected>
-     */
-    public function testGetAfterRemove()
-    {
-        $this->storage->remove(null);
 
-        $this->assertEquals('test', $this->storage->get(null, 'test'));
-        $this->assertException(function () {
-            $this->assertEquals('test', $this->storage->getRequired(null));
-        });
-    }
-    
     /**
      * @covers ::set
      * @covers ::<protected>
@@ -103,8 +90,10 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
         $this->assertEquals(1, $this->storage-> get('meadow.trees.oak', 1));
         $this->storage-> set(null, array('test' => 5));
         $this->assertEquals('5', $this->storage-> get('test'));
-        $this->assertException(function () {
-            $this->storage-> set(null, 5);
+        
+        $storage = $this->storage;
+        $this->assertException(function () use($storage) {
+            $storage->set(null, 5);
         });
     }
 
@@ -115,14 +104,36 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
     public function testRemove()
     {
         $this->storage->remove('meadow.grass_type');
-        $this->assertEquals('test', $this->storage-> get('meadow.grass_type', 'test'));
+        $this->assertEquals('test', $this->storage->get('meadow.grass_type', 'test'));
         $this->storage->remove('meadow.fairies');
-        $this->assertEquals('test', $this->storage-> get('meadow.fairies,names', 'test'));
+        $this->assertEquals('test', $this->storage->get('meadow.fairies,names', 'test'));
         $this->storage->remove(null);
-        $this->assertEquals('test', $this->storage-> get('meadow', 'test'));
-        $this->assertEquals('test', $this->storage-> get(null, 'test'));
+        $this->assertEquals('test', $this->storage->get('meadow', 'test'));
+        $this->assertEquals('test', $this->storage->get(null, 'test'));
+        
+        $storage = $this->storage;
+        $this->assertException(function () use($storage) {
+            $this->storage->getRequired(null);
+        });
     }
 
+    /**
+     * @covers ::keys
+     * @covers ::<protected>
+     */
+    public function testKeys()
+    {
+        $this->assertSame(array('meadows', 'meadow', 'lake'), $this->storage->keys());
+        $this->assertSame(array('names'), $this->storage->keys('meadow.fairies'));
+        $this->assertSame(array(), $this->storage->keys('meadow.fairies.pixie'));
+        
+        $storage = $this->storage;
+        $this->assertException(function () use($storage) {
+            $storage->keys('meadow.fairies.pixie', true);
+        });
+    }
+
+    
     /**
      * @covers ::slice
      * @covers ::<protected>

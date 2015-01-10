@@ -19,36 +19,27 @@ class Directory extends \PHPixie\Config\Storage\Persistable
         parent::__construct($config, $key);
     }
 
-    public function get($key = null)
+    public function getData($key = null, $isRequired = false, $default = null)
     {
         $this->requireSubdirs();
-        $args = func_get_args();
 
         if (!empty($key)) {
-            list($current, $subkey) = $this->splitKey($key);
-            //print_r(array($current, $subkey, $this->subdirs));
-            if (isset($this->subdirs[$current])) {
-                $storage = $this->subdirs[$current];
-                $key = $subkey;
-            }else
-                $storage = $this->storage();
-
-            if (array_key_exists(1, $args))
-                return $storage-> get($key, $args[1]);
-            return $storage->get($key);
+            list($storage, $key) = $this->getStorageAndKey($key);
+            
+            return $storage->getData($key, $isRequired, $default);
         }
 
-        $data = $this->storage()->get(null, null);
+        $data = $this->storage()->get();
         foreach ($this->subdirs as $name => $subdir) {
-            $subdata = $subdir->get(null, null);
+            $subdata = $subdir->get();
             if (!empty($subdata)) {
                 $data[$name] = $subdata;
             }
         }
 
         if (empty($data)) {
-            if (array_key_exists(1, $args))
-                return $args[1];
+            if (!$isRequired)
+                return $default;
 
             throw new \PHPixie\Config\Exception("Configuration for {$key} not set.");
         }
@@ -56,6 +47,38 @@ class Directory extends \PHPixie\Config\Storage\Persistable
         return $data;
     }
 
+    public function keys($key = null, $isRequired = false)
+    {
+        $this->requireSubdirs();
+        if (!empty($key)) {
+            list($storage, $key) = $this->getStorageAndKey($key);
+            
+            return $storage->keys($key, $isRequired);
+        }
+        
+        $keys = array_fill_keys($this->storage()->keys(), true);
+        
+        foreach($this->subdirs as $name => $subdir) {
+            $keys[$name]=true;
+        }
+        
+        return array_keys($keys);
+    }
+    
+    protected function getStorageAndKey($key)
+    {
+        list($current, $subkey) = $this->splitKey($key);
+
+        if (isset($this->subdirs[$current])) {
+            $storage = $this->subdirs[$current];
+            $key = $subkey;
+        }else {
+            $storage = $this->storage();
+        }
+        
+        return array($storage, $key);
+    }
+    
     public function set($key, $value)
     {
         $this->requireSubdirs();

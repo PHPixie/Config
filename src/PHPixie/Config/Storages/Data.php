@@ -43,9 +43,10 @@ class Data extends \PHPixie\Config\Storage
         unset($group[$key]);
     }
     
-    public function keys($key = null, $throwIfMissing = true)
+    public function keys($key = null, $isRequired = false)
     {
-        
+        $data = $this->getData($key, $isRequired, array());
+        return array_keys($data);
     }
 
     public function getData($key = null, $isRequired = false, $default = null)
@@ -54,15 +55,17 @@ class Data extends \PHPixie\Config\Storage
             $path = explode('.', $key);
             $key = array_pop($path);
             $group = & $this->findGroup($path);
-            if ($group !== null && array_key_exists($key, $group))
+            if ($group !== null && array_key_exists($key, $group)) {
                 return $group[$key];
-        }elseif(!empty($this->data))
-
+            }
+            
+        }elseif(!empty($this->data)) {
             return $this->data;
-
-        if (!$isRequired)
+        }
+        
+        if (!$isRequired) {
             return $default;
-
+        }
         throw new \PHPixie\Config\Exception("Configuration for '{$this->fullKey($key)}' not set.");
     }
 

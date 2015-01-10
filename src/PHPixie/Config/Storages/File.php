@@ -21,7 +21,7 @@ class File extends \PHPixie\Config\Storage\Persistable
     public function getData($key = null, $isRequired = false, $default = null)
     {
         $this->requireLoad();
-        return $this->dataStorage->get($key, $isRequired, $default);
+        return $this->dataStorage->getData($key, $isRequired, $default);
     }
 
     public function set($key, $value)
@@ -41,7 +41,7 @@ class File extends \PHPixie\Config\Storage\Persistable
     public function keys($key = null, $isRequired = false)
     {
         $this->requireLoad();
-        $this->dataStorage->keys($key, $isRequired);
+        return $this->dataStorage->keys($key, $isRequired);
     }
 
     public function persist()
@@ -61,8 +61,10 @@ class File extends \PHPixie\Config\Storage\Persistable
     {
         if (file_exists($this->file)) {
             $data = $this->handler->read($this->file);
-        }else
+        }else{
             $data = array();
+        }
+        
         $this->dataStorage->set(null, $data);
         $this->loaded = true;
     }
