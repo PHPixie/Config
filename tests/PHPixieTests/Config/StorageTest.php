@@ -99,6 +99,7 @@ abstract class StorageTest extends \PHPixieTests\Config\SliceTest
 
     /**
      * @covers ::remove
+     * @covers ::getData
      * @covers ::<protected>
      */
     public function testRemove()
