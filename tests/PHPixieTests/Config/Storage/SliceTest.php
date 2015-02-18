@@ -75,7 +75,7 @@ class SliceTest extends \PHPixieTests\Config\SliceTest
                     ->method('keys')
                     ->with ('test', true)
                     ->will($this->returnValue($keys));
-        $this->assertSame($keys, $this->slice->keys('test'));
+        $this->assertSame($keys, $this->slice->keys('test', true));
 
     }
 
