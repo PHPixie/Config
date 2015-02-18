@@ -36,7 +36,7 @@ class Slice extends \PHPixie\Config\Slice
     
     public function keys($key = null, $isRequired = false)
     {
-        $this->storage->keys($this->storageKey($key), $isRequired);
+        return $this->storage->keys($this->storageKey($key), $isRequired);
     }
 
     public function storageKey($key = null)

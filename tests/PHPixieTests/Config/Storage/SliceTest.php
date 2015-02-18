@@ -62,19 +62,20 @@ class SliceTest extends \PHPixieTests\Config\SliceTest
      */
     public function testKeys()
     {
+        $keys = array('a');
         $this->storage
                     ->expects($this->at(0))
                     ->method('keys')
-                    ->with ('test', false);
-        
-        $this->slice->keys('test');
+                    ->with ('test', false)
+                    ->will($this->returnValue($keys));
+        $this->assertSame($keys, $this->slice->keys('test'));
         
         $this->storage
                     ->expects($this->at(0))
                     ->method('keys')
-                    ->with ('test', true);
-        
-        $this->slice->keys('test', true);
+                    ->with ('test', true)
+                    ->will($this->returnValue($keys));
+        $this->assertSame($keys, $this->slice->keys('test'));
 
     }
 
