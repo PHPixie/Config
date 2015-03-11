@@ -4,42 +4,24 @@ namespace PHPixie;
 
 class Config
 {
-    protected $fileHandlers;
-
-    public function dataStorage($data = array(), $key = null)
+    protected $builder;
+    
+    public function __construct($slice)
     {
-        return new \PHPixie\Config\Storages\Data($this, $data, $key);
+        $this->builder = new Config\Builder($slice);
     }
-
-    public function fileStorage($file, $key = null)
+    
+    public function file($file)
     {
-        $dataStorage = $this->dataStorage();
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-        $handler = $this->fileHandlers()->getForExtension($extension);
-
-        return new \PHPixie\Config\Storages\File($this, $dataStorage, $handler, $file, $key);
+        return $this->builder->storages()->file($file);
     }
-
-    public function directoryStorage($directory, $name, $extension = 'php', $key = null)
+    
+    public function directory($directory, $name, $defaultFormat = 'php')
     {
-        return new \PHPixie\Config\Storages\Directory($this, $directory, $name, $extension, $key);
-    }
-
-    public function buildSlice($storage, $key = null)
-    {
-        return new \PHPixie\Config\Storage\Slice($this, $storage, $key);
-    }
-
-    public function fileHandlers()
-    {
-        if (!isset($this->fileHandlers))
-            $this->fileHandlers = $this->buildFileHandlers();
-
-        return $this->fileHandlers;
-    }
-
-    protected function buildFileHandlers()
-    {
-        return new \PHPixie\Config\Storages\File\Handlers($this);
+        return $this->builder->storages()->directory(
+            $directory,
+            $name,
+            $defaultFormat
+        );
     }
 }

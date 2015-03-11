@@ -1,22 +1,26 @@
 <?php
 
-namespace PHPixie\Config\Storages;
+namespace PHPixie\Config\Storages\Type;
 
-class Directory extends \PHPixie\Config\Storage\Persistable
+class Directory extends \PHPixie\Slice\Data\Implementation
+                        implements \PHPixie\Config\Storages\Storage\Editable\Persistable
 {
-    protected $config;
+    protected $storages;
     protected $directory;
     protected $name;
-    protected $extension;
+    protected $defaultFormat;
+    
     protected $storage;
     protected $subdirs;
 
-    public function __construct($config, $directory, $name, $extension = 'php', $key = null)
+    public function __construct($storages, $sliceBuilder, $directory, $name, $defaultFormat = 'php')
     {
-        $this->directory = $directory;
-        $this->name = $name;
-        $this->extension = $extension;
-        parent::__construct($config, $key);
+        $this->storages      = $storages;
+        $this->directory     = $directory;
+        $this->name          = $name;
+        $this->defaultFormat = $defaultFormat;
+        
+        parent::__construct($sliceBuilder);
     }
 
     public function getData($key = null, $isRequired = false, $default = null)
@@ -63,6 +67,11 @@ class Directory extends \PHPixie\Config\Storage\Persistable
         }
         
         return array_keys($keys);
+    }
+    
+    public function slice($path = null)
+    {
+        return $this->sliceBuilder->editableSlice($this, $path);
     }
     
     protected function getStorageAndKey($key)
@@ -119,12 +128,14 @@ class Directory extends \PHPixie\Config\Storage\Persistable
         return $this->storage()->remove($key);
     }
 
-    public function persist()
+    public function persist($removeFilesIfEmpty = false)
     {
         $this->requireSubdirs();
-        foreach($this->subdirs as $subdir)
-            $subdir->persist();
-        $this->storage()->persist();
+        foreach($this->subdirs as $subdir) {
+            $subdir->persist($removeFilesIfEmpty);
+        }
+        
+        $this->storage()->persist($removeFilesIfEmpty);
     }
 
     protected function splitKey($key)
@@ -157,14 +168,25 @@ class Directory extends \PHPixie\Config\Storage\Persistable
 
                 $fileInfo = pathinfo($filePath);
                 $fileName = $fileInfo['filename'];
-                if (isset($this->groups[$fileName]))
-                    throw new \PHPixie\Config\Exception("More than one configuration file for {$this->key}.{$fileName} forund.");
-                $this->subdirs[$fileName] = $this->directoryStorage($directory, $fileName, $fileInfo['extension']);
+                
+                if (isset($this->groups[$fileName])) {
+                    throw new \PHPixie\Config\Exception("More than one configuration file for {$this->key}.{$fileName} found.");
+                }
+                
+                $this->subdirs[$fileName] = $this->storages->directory(
+                    $directory,
+                    $fileName,
+                    $fileInfo['extension']
+                );
             }
 
             foreach ($dirs as $dir) {
                 if (!isset($this->subdirs[$dir]))
-                    $this->subdirs[$dir] = $this->directoryStorage($directory, $dir, $this->extension);
+                    $this->subdirs[$dir] = $this->storages->directory(
+                        $directory,
+                        $dir,
+                        $this->defaultFormat
+                    );
             }
         }
 
@@ -173,21 +195,11 @@ class Directory extends \PHPixie\Config\Storage\Persistable
     protected function storage()
     {
         if (!isset($this->storage)) {
-            $file = $this->directory.'/'.$this->name.'.'.$this->extension;
-            $this->storage = $this->fileStorage($file);
+            $file = $this->directory.'/'.$this->name.'.'.$this->defaultFormat;
+            $this->storage = $this->storages->file($file);
         }
 
         return $this->storage;
-    }
-
-    protected function fileStorage($file)
-    {
-        return $this->config->fileStorage($file);
-    }
-
-    protected function directoryStorage($directory, $name, $extension)
-    {
-        return $this->config->directoryStorage($directory, $name, $extension);
     }
 
 }
