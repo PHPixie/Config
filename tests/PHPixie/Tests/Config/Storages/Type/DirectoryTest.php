@@ -236,7 +236,7 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
     {
         $copy = $this->dir.'/copy.txt';
         copy($file, $copy);
-        $this->assertSame($data, include $file);
+        $this->assertSame($data, include $copy);
         unlink($copy);
     }
     
