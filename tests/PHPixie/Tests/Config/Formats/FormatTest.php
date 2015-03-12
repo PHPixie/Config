@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPixieTests\Config\Formats;
+namespace PHPixie\Tests\Config\Formats;
 
 abstract class FormatTest extends \PHPixie\Test\Testcase
 {

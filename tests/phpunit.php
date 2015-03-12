@@ -1,6 +1,2 @@
 <?php
-$root = dirname(__DIR__);
-$loader = require_once($root.'/vendor/autoload.php');
-$loader->add('PHPixie', $root.'/src/');
-$loader->add('PHPixieTests', $root.'/tests/');
-$loader->add('PHPixieTests', $root.'/vendor/phpixie/slice/tests/');
+require_once(__DIR__.'/../vendor/autoload.php');

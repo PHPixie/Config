@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPixieTests\Config\Storages\Type;
+namespace PHPixie\Tests\Config\Storages\Type;
 
 /**
  * @coversDefaultClass \PHPixie\Config\Storages\Type\Directory
  */
-class DirectoryTest extends \PHPixieTests\Slice\Data\ImplementationTest
+class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
 {
     protected $configBuilder;
     protected $dir;

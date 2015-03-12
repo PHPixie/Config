@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPixieTests\Config\Formats\Format;
+namespace PHPixie\Tests\Config\Formats\Format;
 
 /**
  * @coversDefaultClass \PHPixie\Config\Formats\Format\JSON
  */
-class JSONTest extends \PHPixieTests\Config\Formats\FormatTest
+class JSONTest extends \PHPixie\Tests\Config\Formats\FormatTest
 {
     /**
      * @covers ::read

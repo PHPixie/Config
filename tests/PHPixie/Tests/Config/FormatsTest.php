@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPixieTests\Config;
+namespace PHPixie\Tests\Config;
 
 /**
  * @coversDefaultClass \PHPixie\Config\Formats

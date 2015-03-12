@@ -8,7 +8,7 @@ class Config
     
     public function __construct($slice)
     {
-        $this->builder = new Config\Builder($slice);
+        $this->builder = $this->buildBuilder($slice);
     }
     
     public function file($file)
@@ -23,5 +23,15 @@ class Config
             $name,
             $defaultFormat
         );
+    }
+    
+    public function builder()
+    {
+        return $this->builder;
+    }
+    
+    protected function buildBuilder($slice)
+    {
+        return new Config\Builder($slice);
     }
 }

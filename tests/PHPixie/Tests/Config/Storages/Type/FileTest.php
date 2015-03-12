@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPixieTests\Config\Storages\Type;
+namespace PHPixie\Tests\Config\Storages\Type;
 
 /**
  * @coversDefaultClass \PHPixie\Config\Storages\Type\File
  */
-class FileTest extends \PHPixieTests\Slice\Data\ImplementationTest
+class FileTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
 {
     protected $formats;
     protected $file;
