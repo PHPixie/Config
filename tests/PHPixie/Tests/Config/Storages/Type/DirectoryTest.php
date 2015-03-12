@@ -142,6 +142,20 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
     }
 
     /**
+     * @covers ::get
+     * @covers ::<protected>
+     */
+    public function testFileCollisionException()
+    {
+        file_put_contents($this->dir.'/forest/meadow.json', '');
+        
+        $storage = $this->sliceData;
+        $this->assertConfigException(function () use($storage) {
+            $storage->get('meadow');
+        });
+    }
+    
+    /**
      * @covers ::keys
      * @covers ::<protected>
      */

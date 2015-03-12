@@ -78,7 +78,7 @@ class Directory extends \PHPixie\Slice\Data\Implementation
     {
         list($current, $subkey) = $this->splitKey($key);
 
-        if (isset($this->subdirs[$current])) {
+        if (array_key_exists($current, $this->subdirs)) {
             $storage = $this->subdirs[$current];
             $key = $subkey;
         }else {
@@ -93,9 +93,9 @@ class Directory extends \PHPixie\Slice\Data\Implementation
         $this->requireSubdirs();
         if (!empty($key)) {
             list($current, $subkey) = $this->splitKey($key);
-            if (isset($this->subdirs[$current]))
+            if (array_key_exists($current, $this->subdirs)) {
                 return $this->subdirs[$current]->set($subkey, $value);
-
+            }
         } elseif (is_array($value)) {
             foreach ($this->subdirs as $name => $subdir) {
                 if (array_key_exists($name, $value)) {
@@ -122,9 +122,10 @@ class Directory extends \PHPixie\Slice\Data\Implementation
         }
 
         list($current, $subkey) = $this->splitKey($key);
-        if (isset($this->subdirs[$current]))
+        if (array_key_exists($current, $this->subdirs)) {
             return $this->subdirs[$current]->remove($subkey);
-
+        }
+        
         return $this->storage()->remove($key);
     }
 
@@ -141,9 +142,9 @@ class Directory extends \PHPixie\Slice\Data\Implementation
     protected function splitKey($key)
     {
         $splitKey = explode('.', $key, 2);
-        if (!isset($splitKey[1]))
+        if (!array_key_exists(1, $splitKey)) {
             $splitKey[1] = null;
-
+        }
         return $splitKey;
     }
 
@@ -169,8 +170,8 @@ class Directory extends \PHPixie\Slice\Data\Implementation
                 $fileInfo = pathinfo($filePath);
                 $fileName = $fileInfo['filename'];
                 
-                if (isset($this->groups[$fileName])) {
-                    throw new \PHPixie\Config\Exception("More than one configuration file for {$this->key}.{$fileName} found.");
+                if (array_key_exists($fileName,$this->subdirs)) {
+                    throw new \PHPixie\Config\Exception("More than one file for {$fileName} in {$directory}.");
                 }
                 
                 $this->subdirs[$fileName] = $this->storages->directory(
@@ -181,7 +182,7 @@ class Directory extends \PHPixie\Slice\Data\Implementation
             }
 
             foreach ($dirs as $dir) {
-                if (!isset($this->subdirs[$dir]))
+                if (!array_key_exists($dir, $this->subdirs))
                     $this->subdirs[$dir] = $this->storages->directory(
                         $directory,
                         $dir,
@@ -194,7 +195,7 @@ class Directory extends \PHPixie\Slice\Data\Implementation
 
     protected function storage()
     {
-        if (!isset($this->storage)) {
+        if ($this->storage === null) {
             $file = $this->directory.'/'.$this->name.'.'.$this->defaultFormat;
             $this->storage = $this->storages->file($file);
         }
