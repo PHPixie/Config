@@ -189,9 +189,9 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         $this->sliceData->set('meadow', $persistedData);
         $this->sliceData->persist();
     
-        $this->assertEquals(array(
+        $this->assertIncludedFile(array(
             'names' => array('Pixie')
-        ), include($this->dir.'/forest/meadow/fairies.php'));
+        ), $this->dir.'/forest/meadow/fairies.php');
         
         $this->assertEquals(true, file_exists($this->dir.'/forest/meadow/trees/oak.php'));
     }
@@ -211,13 +211,21 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         $this->sliceData->set('meadow', $persistedData);
         $this->sliceData->persist(true);
     
-        $this->assertEquals(array(
+        $this->assertIncludedFile(array(
             'names' => array('Pixie')
-        ), include($this->dir.'/forest/meadow/fairies.php'));
+        ), $this->dir.'/forest/meadow/fairies.php');
         
         $this->assertEquals(false, file_exists($this->dir.'/forest/meadow/trees/oak.php'));
     }
-
+    
+    protected function assertIncludedFile($data, $file)
+    {
+        $copy = $this->dir.'/copy.txt';
+        copy($file, $copy);
+        $this->assertSame($data, include $file);
+        unlink($copy);
+    }
+    
     protected function removeDirs()
     {
         if(!is_dir($this->dir)) {
