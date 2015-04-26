@@ -76,7 +76,7 @@ class File extends    \PHPixie\Slice\Data\Implementation
                 $data = array();
             }
             
-            $this->arrayData = $this->sliceBuilder->arrayData($data);
+            $this->arrayData = $this->sliceBuilder->editableArrayData($data);
         }
         
         return $this->arrayData;

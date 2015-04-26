@@ -19,7 +19,7 @@ class FileTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         $this->file = sys_get_temp_dir().'/phpixie_config_file.php';
         $this->removeFile();
         
-        $this->arrayData = $this->quickMock('\PHPixie\Slice\Type\ArrayData');
+        $this->arrayData = $this->quickMock('\PHPixie\Slice\Type\ArrayData\Editable');
         $this->format   = $this->quickMock('\PHPixie\Config\Formats\Format');
         parent::setUp();
     }
@@ -227,7 +227,7 @@ class FileTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
             $data = array();
         }
         
-        $this->method($this->sliceBuilder, 'arrayData', $this->arrayData, array($data), 0);
+        $this->method($this->sliceBuilder, 'editableArrayData', $this->arrayData, array($data), 0);
     }
     
     protected function removeFile()
