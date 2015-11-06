@@ -47,6 +47,16 @@ class File extends    \PHPixie\Slice\Data\Implementation
     {
         return $this->arrayData()->slice($path);
     }
+    
+    public function arraySlice($path = null)
+    {
+        return $this->arrayData()->arraySlice($path);
+    }
+    
+    public function getIterator()
+    {
+        return $this->arrayData()->getIterator();
+    }
 
     public function persist($removeIfEmpty = false)
     {

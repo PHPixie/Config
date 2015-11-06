@@ -74,6 +74,17 @@ class Directory extends \PHPixie\Slice\Data\Implementation
         return $this->sliceBuilder->editableSlice($this, $path);
     }
     
+    public function arraySlice($path = null)
+    {
+        $data = $this->get($path);
+        return $this->sliceBuilder->arraySlice($data, $path);
+    }
+    
+    public function getIterator()
+    {
+        return $this->sliceBuilder->iterator($this);
+    }
+    
     protected function getStorageAndKey($key)
     {
         list($current, $subkey) = $this->splitKey($key);

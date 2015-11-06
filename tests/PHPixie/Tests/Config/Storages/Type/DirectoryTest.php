@@ -25,8 +25,8 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         ),
         'lake' => array(
             'mermaids' => array(
-                            'names' => array('Naiad')
-                        )
+                'names' => array('Naiad')
+            )
         )
     );
     
@@ -186,7 +186,32 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         $this->method($this->sliceBuilder, 'editableSlice', $slice, array($this->sliceData, null), 0);
         $this->assertSame($slice, $this->sliceData->slice());
     }
-
+    
+    /**
+     * @covers ::arraySlice
+     * @covers ::<protected>
+     */
+    public function testArraySlice()
+    {
+        $slice = $this->getArraySlice();
+        $this->method($this->sliceBuilder, 'arraySlice', $slice, array($this->data['meadow'], 'meadow'), 0);
+        $this->assertSame($slice, $this->sliceData->arraySlice('meadow'));
+        
+        $slice = $this->getArraySlice();
+        $this->method($this->sliceBuilder, 'arraySlice', $slice, array($this->data, null), 0);
+        $this->assertSame($slice, $this->sliceData->arraySlice());
+    }
+    
+    /**
+     * @covers ::getIterator
+     * @covers ::<protected>
+     */
+    public function testIterator()
+    {
+        $iterator = $this->getIterator();
+        $this->method($this->sliceBuilder, 'iterator', $iterator, array($this->sliceData), 0);
+        $this->assertSame($iterator, $this->sliceData->getIterator());
+    }
 
     /**
      * @covers ::persist
@@ -269,7 +294,10 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
     
     protected function sliceData()
     {
-        $this->sliceBuilder  = $this->quickMock('\PHPixie\Slice', array('editableSlice', 'iterator'));
+        $this->sliceBuilder  = $this->quickMock(
+            '\PHPixie\Slice',
+            array('editableSlice', 'iterator', 'arraySlice')
+        );
         $this->configBuilder = new \PHPixie\Config($this->sliceBuilder);
         return $this->configBuilder->directory(
             $this->dir,

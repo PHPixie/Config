@@ -90,6 +90,37 @@ class FileTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
     }
     
     /**
+     * @covers ::arraySlice
+     * @covers ::<protected>
+     */
+    public function testArraySlice()
+    {
+        $this->prepareArrayData();
+        
+        $slice = $this->getArraySlice();
+        
+        $this->method($this->arrayData, 'arraySlice', $slice, array('names'), 0);
+        $this->assertSame($slice, $this->sliceData->arraySlice('names'));
+        
+        $this->method($this->arrayData, 'arraySlice', $slice, array(null), 0);
+        $this->assertSame($slice, $this->sliceData->arraySlice());
+    }
+    
+    /**
+     * @covers ::getIterator
+     * @covers ::<protected>
+     */
+    public function testIterator()
+    {
+        $this->prepareArrayData();
+        
+        $iterator = $this->quickMock('\Iterator');
+        
+        $this->method($this->arrayData, 'getIterator', $iterator, array(), 0);
+        $this->assertSame($iterator, $this->sliceData->getIterator());
+    }
+    
+    /**
      * @covers ::set
      * @covers ::<protected>
      */
