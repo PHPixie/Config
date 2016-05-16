@@ -7,6 +7,7 @@ class File extends    \PHPixie\Slice\Data\Implementation
 {
     protected $formats;
     protected $file;
+    protected $parameters;
     
     protected $arrayData;
     protected $format;
@@ -14,16 +15,48 @@ class File extends    \PHPixie\Slice\Data\Implementation
     protected $isLoaded   = false;
     protected $isModified = false;
 
-    public function __construct($sliceBuilder, $formats, $file)
+    public function __construct($sliceBuilder, $formats, $file, $parameters = null)
     {
-        $this->formats = $formats;
-        $this->file    = $file;
+        $this->formats    = $formats;
+        $this->file       = $file;
+        $this->parameters = $parameters;
         parent::__construct($sliceBuilder);
     }
 
     public function getData($path = null, $isRequired = false, $default = null)
     {
-        return $this->arrayData()->getData($path, $isRequired, $default);
+        $data = $this->arrayData()->getData($path, $isRequired, $default);
+        if($parameters !== null) {
+            return $data;
+        }
+        
+        if(is_string($data)) {
+            return $this->checkParameter($data);
+        }
+        
+        if(is_array($data)) {
+            array_walk_recursive($data, array($this, 'checkParameter'));
+        }
+        
+        return $data;
+    }
+    
+    protected function checkParameter(&$value)
+    {
+        if(is_string($value) && $value{0} == '%' && $value{count($value) - 1} == '%') {
+            $parts = explode($value, '%');
+            $count = count($parts);
+            if($count == 3) {
+                $value = $this->parameters->getRequired($parts[1]);
+                
+            }elseif($count == 4) {
+                $value = $this->parameters->get($parts[1], $parts[2]);
+            }else{
+                throw \PHPixie\Config\Exception("Invalid parameter '$value'");
+            }
+        }
+        
+        return $value;
     }
 
     public function set($path, $value)

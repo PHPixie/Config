@@ -9,16 +9,18 @@ class Directory extends \PHPixie\Slice\Data\Implementation
     protected $directory;
     protected $name;
     protected $defaultFormat;
+    protected $parameters;
     
     protected $storage;
     protected $subdirs;
 
-    public function __construct($storages, $sliceBuilder, $directory, $name, $defaultFormat = 'php')
+    public function __construct($storages, $sliceBuilder, $directory, $name, $defaultFormat = 'php', $parameters = null)
     {
         $this->storages      = $storages;
         $this->directory     = $directory;
         $this->name          = $name;
         $this->defaultFormat = $defaultFormat;
+        $this->parameters = $parameters;
         
         parent::__construct($sliceBuilder);
     }
@@ -208,7 +210,7 @@ class Directory extends \PHPixie\Slice\Data\Implementation
     {
         if ($this->storage === null) {
             $file = $this->directory.'/'.$this->name.'.'.$this->defaultFormat;
-            $this->storage = $this->storages->file($file);
+            $this->storage = $this->storages->file($file, $this->parameters);
         }
 
         return $this->storage;

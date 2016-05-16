@@ -13,23 +13,25 @@ class Storages
         $this->slice = $slice;
     }
     
-    public function file($file)
+    public function file($file, $parameters = null)
     {
         return new \PHPixie\Config\Storages\Type\File(
             $this->slice,
             $this->configBuilder->formats(),
-            $file
+            $file,
+            $parameters
         );
     }
     
-    public function directory($directory, $name, $defaultFormat = 'php')
+    public function directory($directory, $name, $defaultFormat = 'php', $parameters = null)
     {
         return new \PHPixie\Config\Storages\Type\Directory(
             $this,
             $this->slice,
             $directory,
             $name,
-            $defaultFormat
+            $defaultFormat,
+            $parameters
         );
     }
 }

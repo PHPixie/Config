@@ -11,17 +11,18 @@ class Config
         $this->builder = $this->buildBuilder($slice);
     }
     
-    public function file($file)
+    public function file($file, $parameters = null)
     {
-        return $this->builder->storages()->file($file);
+        return $this->builder->storages()->file($file, $parameters);
     }
     
-    public function directory($directory, $name, $defaultFormat = 'php')
+    public function directory($directory, $name, $defaultFormat = 'php', $parameters = null)
     {
         return $this->builder->storages()->directory(
             $directory,
             $name,
-            $defaultFormat
+            $defaultFormat,
+            $parameters
         );
     }
     
