@@ -26,7 +26,7 @@ class File extends    \PHPixie\Slice\Data\Implementation
     public function getData($path = null, $isRequired = false, $default = null)
     {
         $data = $this->arrayData()->getData($path, $isRequired, $default);
-        if($parameters !== null) {
+        if($this->parameters !== null) {
             return $data;
         }
         
