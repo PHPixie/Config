@@ -26,7 +26,7 @@ class File extends    \PHPixie\Slice\Data\Implementation
     public function getData($path = null, $isRequired = false, $default = null)
     {
         $data = $this->arrayData()->getData($path, $isRequired, $default);
-        if($this->parameters !== null) {
+        if($this->parameters === null) {
             return $data;
         }
         
@@ -44,7 +44,8 @@ class File extends    \PHPixie\Slice\Data\Implementation
     protected function checkParameter(&$value)
     {
         if(is_string($value) && $value{0} == '%' && $value{count($value) - 1} == '%') {
-            $parts = explode($value, '%');
+            $parts = explode('%', $value);
+            
             $count = count($parts);
             if($count == 3) {
                 $value = $this->parameters->getRequired($parts[1]);
@@ -52,7 +53,7 @@ class File extends    \PHPixie\Slice\Data\Implementation
             }elseif($count == 4) {
                 $value = $this->parameters->get($parts[1], $parts[2]);
             }else{
-                throw \PHPixie\Config\Exception("Invalid parameter '$value'");
+                throw new \PHPixie\Config\Exception("Invalid parameter '$value'");
             }
         }
         

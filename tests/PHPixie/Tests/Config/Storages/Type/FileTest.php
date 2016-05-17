@@ -9,6 +9,7 @@ class FileTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
 {
     protected $formats;
     protected $file;
+    protected $parameters;
     
     protected $format;
     protected $arrayData;
@@ -18,6 +19,8 @@ class FileTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         $this->formats = $this->quickMock('\PHPixie\Config\Formats');
         $this->file = sys_get_temp_dir().'/phpixie_config_file.php';
         $this->removeFile();
+        
+        $this->parameters = $this->quickMock('\PHPixie\Slice\Data');
         
         $this->arrayData = $this->quickMock('\PHPixie\Slice\Type\ArrayData\Editable');
         $this->format   = $this->quickMock('\PHPixie\Config\Formats\Format');
@@ -151,6 +154,33 @@ class FileTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
     }
     
     /**
+     * @covers ::get
+     * @covers ::<protected>
+     */
+    public function testParameters()
+    {
+        $this->prepareArrayData();
+        
+        $this->method($this->arrayData, 'getData', '%pixie%', array('name', false, null), 0);
+        $this->method($this->parameters, 'getRequired', 5, array('pixie'), 0);
+        $this->assertSame(5, $this->sliceData->get('name'));
+        
+        $this->method($this->arrayData, 'getData', array('test' => '%pixie%'), array('name', false, null), 0);
+        $this->method($this->parameters, 'getRequired', 5, array('pixie'), 0);
+        $this->assertSame(array('test' => 5), $this->sliceData->get('name'));
+        
+        $this->method($this->arrayData, 'getData', '%pixie%trixie%', array('name', false, null), 0);
+        $this->method($this->parameters, 'get', 5, array('pixie', 'trixie'), 0);
+        $this->assertSame(5, $this->sliceData->get('name'));
+        
+        $self = $this;
+        $this->method($this->arrayData, 'getData', '%pixie%tri%xie%', array('name', false, null), 0);
+        $this->assertException(function() use($self) {
+            $this->assertSame(5, $self->sliceData->get('name'));
+        }, '\PHPixie\Config\Exception');
+    }
+    
+    /**
      * @covers ::persist
      * @covers ::<protected>
      */
@@ -273,7 +303,8 @@ class FileTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         return new \PHPixie\Config\Storages\Type\File(
             $this->sliceBuilder,
             $this->formats,
-            $this->file
+            $this->file,
+            $this->parameters
         );
     }
 }
