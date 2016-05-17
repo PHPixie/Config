@@ -9,6 +9,7 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
 {
     protected $configBuilder;
     protected $dir;
+    protected $parameters;
     
     protected $data = array(
         'meadows' => 5,
@@ -35,16 +36,18 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         array('field/', 'flowers.php', array('type' => 3)),
         array('forest/', 'meadow.php', array('grass_type' => 6, 'fairies' => false)),
         array('forest/lake/', 'mermaids.php', array('names' => array('Naiad'))),
-        array('forest/meadow/', 'fairies.php', array('names' => array('Tinkerbell'))),
+        array('forest/meadow/', 'fairies.php', array('names' => array('%pixie%'))),
         array('forest/meadow/trees/', 'oak.php', array('fairy' => array('Trixie'))),
     );
     
     public function setUp()
     {
+        $this->parameters = $this->quickMock('\PHPixie\Slice\Data');
+        $this->method($this->parameters, 'getRequired', 'Tinkerbell', array('pixie'));
         $this->dir = sys_get_temp_dir().'/phpixie_config_test/';
 
         $this->removeDirs();
-
+        
         foreach ($this->files as $file) {
             mkdir($this->dir.$file[0], 0777, true);
             file_put_contents($this->dir.$file[0].$file[1], "<?php\r\nreturn ".var_export($file[2], true).";");
@@ -301,7 +304,9 @@ class DirectoryTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         $this->configBuilder = new \PHPixie\Config($this->sliceBuilder);
         return $this->configBuilder->directory(
             $this->dir,
-            'forest'
+            'forest',
+            'php',
+            $this->parameters
         );
     }
 }

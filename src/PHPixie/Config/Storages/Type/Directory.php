@@ -20,8 +20,7 @@ class Directory extends \PHPixie\Slice\Data\Implementation
         $this->directory     = $directory;
         $this->name          = $name;
         $this->defaultFormat = $defaultFormat;
-        $this->parameters = $parameters;
-        
+        $this->parameters    = $parameters;
         parent::__construct($sliceBuilder);
     }
 
@@ -190,7 +189,8 @@ class Directory extends \PHPixie\Slice\Data\Implementation
                 $this->subdirs[$fileName] = $this->storages->directory(
                     $directory,
                     $fileName,
-                    $fileInfo['extension']
+                    $fileInfo['extension'],
+                    $this->parameters
                 );
             }
 
@@ -199,7 +199,8 @@ class Directory extends \PHPixie\Slice\Data\Implementation
                     $this->subdirs[$dir] = $this->storages->directory(
                         $directory,
                         $dir,
-                        $this->defaultFormat
+                        $this->defaultFormat,
+                        $this->parameters
                     );
             }
         }
