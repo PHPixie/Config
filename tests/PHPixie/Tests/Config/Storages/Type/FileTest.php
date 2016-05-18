@@ -168,16 +168,6 @@ class FileTest extends \PHPixie\Tests\Slice\Data\ImplementationTest
         $this->method($this->arrayData, 'getData', array('test' => '%pixie%'), array('name', false, null), 0);
         $this->method($this->parameters, 'getRequired', 5, array('pixie'), 0);
         $this->assertSame(array('test' => 5), $this->sliceData->get('name'));
-        
-        $this->method($this->arrayData, 'getData', '%pixie%trixie%', array('name', false, null), 0);
-        $this->method($this->parameters, 'get', 5, array('pixie', 'trixie'), 0);
-        $this->assertSame(5, $this->sliceData->get('name'));
-        
-        $self = $this;
-        $this->method($this->arrayData, 'getData', '%pixie%tri%xie%', array('name', false, null), 0);
-        $this->assertException(function() use($self) {
-            $this->assertSame(5, $self->sliceData->get('name'));
-        }, '\PHPixie\Config\Exception');
     }
     
     /**

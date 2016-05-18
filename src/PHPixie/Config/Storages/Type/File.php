@@ -43,17 +43,10 @@ class File extends    \PHPixie\Slice\Data\Implementation
     
     protected function checkParameter(&$value)
     {
-        if(is_string($value) && $value{0} == '%' && $value{count($value) - 1} == '%') {
-            $parts = explode('%', $value);
-            
-            $count = count($parts);
-            if($count == 3) {
-                $value = $this->parameters->getRequired($parts[1]);
-                
-            }elseif($count == 4) {
-                $value = $this->parameters->get($parts[1], $parts[2]);
-            }else{
-                throw new \PHPixie\Config\Exception("Invalid parameter '$value'");
+        if(is_string($value) && $value{0} == '%') {
+            $length = strlen($value);
+            if($value{$length - 1} == '%') {
+                $value = $this->parameters->getRequired(substr($value, 1, $length-2));
             }
         }
         
