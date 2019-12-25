@@ -43,9 +43,9 @@ class File extends    \PHPixie\Slice\Data\Implementation
     
     protected function checkParameter(&$value)
     {
-        if($value && is_string($value) && $value{0} == '%') {
+        if($value && is_string($value) && $value[0] == '%') {
             $length = strlen($value);
-            if($value{$length - 1} == '%') {
+            if($value[$length - 1] == '%') {
                 $value = $this->parameters->getRequired(substr($value, 1, $length-2));
             }
         }
